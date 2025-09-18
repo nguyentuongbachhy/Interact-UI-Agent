@@ -1,0 +1,5 @@
+get_structure.py
+structure.md
+**/__pycache__
+**/app.db
+**/.env
