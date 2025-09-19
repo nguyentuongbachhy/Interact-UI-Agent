@@ -5,10 +5,10 @@ export { default as ProductFormPage } from "./ProductFormPage";
 export { default as ProductDetailPage } from "./ProductDetailPage";
 export { default as NotificationsPage } from "./NotificationsPage";
 export { default as ProfilePage } from "./ProfilePage";
+export { default as SearchPage } from "./SearchPage";
 
 // Placeholder pages
 export {
-  SearchPage,
   CategoriesPage,
   AnalyticsPage,
   SettingsPage,

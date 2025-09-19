@@ -10,6 +10,9 @@ export * from "./profile";
 // Product Components
 export * from "./product";
 
+// Search Components
+export * from "./search";
+
 // Layout Components
 export * from "./layout";
 

@@ -24,6 +24,8 @@ export {
   useProductSearch,
 } from "./useProducts";
 
+export { useSearch } from "./useSearch";
+
 export { useNotifications } from "./useNotifications";
 
 export { useDashboard } from "./useDashboard";
