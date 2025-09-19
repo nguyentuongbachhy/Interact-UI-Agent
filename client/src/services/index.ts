@@ -2,6 +2,7 @@
 export { apiService, ApiService } from "./api";
 export { authService } from "./authService";
 export { productService } from "./productService";
+export { notificationService } from "./notificationService";
 
 // WebSocket & MCP Services
 export { webSocketService, WebSocketService } from "./websocket";

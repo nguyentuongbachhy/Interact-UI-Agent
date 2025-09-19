@@ -53,6 +53,8 @@ export interface ApiEndpoints {
     refresh: string;
     logout: string;
     profile: string;
+    avatar: string;
+    changePassword: string;
   };
   products: {
     list: string;
@@ -68,5 +70,17 @@ export interface ApiEndpoints {
     get: (id: string) => string;
     update: (id: string) => string;
     delete: (id: string) => string;
+  };
+  notifications: {
+    list: string;
+    create: string;
+    get: (id: string) => string;
+    update: (id: string) => string;
+    delete: (id: string) => string;
+    markAsRead: (id: string) => string;
+    markAllAsRead: string;
+    unreadCount: string;
+    bulkDelete: string;
+    settings: string;
   };
 }

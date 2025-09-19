@@ -27,6 +27,10 @@ export interface SearchFilters {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
+  minStock?: number;
+  maxStock?: number;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface SearchProductsRequest {

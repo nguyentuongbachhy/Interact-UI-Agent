@@ -4,6 +4,7 @@ export { default as ProductsPage } from "./ProductsPage";
 export { default as ProductFormPage } from "./ProductFormPage";
 export { default as ProductDetailPage } from "./ProductDetailPage";
 export { default as NotificationsPage } from "./NotificationsPage";
+export { default as ProfilePage } from "./ProfilePage";
 
 // Placeholder pages
 export {
@@ -11,5 +12,4 @@ export {
   CategoriesPage,
   AnalyticsPage,
   SettingsPage,
-  ProfilePage,
 } from "./PlaceholderPages";

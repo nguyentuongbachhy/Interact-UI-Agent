@@ -2,18 +2,7 @@ import { Trash2, Edit, Package } from "lucide-react";
 import { Button, Card, CardContent } from "../ui";
 import type React from "react";
 import { formatDate } from "../../utils";
-
-export interface Product {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  quantity: number;
-  category?: string;
-  imageUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { Product } from "../../types";
 
 interface ProductItemProps {
   product: Product;
@@ -92,7 +81,6 @@ export function ProductItem({
                   alt={product.name}
                   className="p-1 w-full max-w-64 aspect-square object-cover transition-transform duration-300 group-hover:scale-100"
                 />
-                {/* <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-xl" /> */}
               </div>
             ) : (
               <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border border-gray-200/50 group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300">

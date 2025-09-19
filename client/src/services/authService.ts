@@ -93,6 +93,37 @@ class AuthService {
     await apiService.post("/auth/confirm-reset-password", data);
   }
 
+  // Avatar upload and management
+  async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      const response = await apiService.post<{ avatarUrl: string }>(
+        "/auth/avatar",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("[authService] Upload avatar error:", error);
+      throw new Error("Failed to upload avatar");
+    }
+  }
+
+  async removeAvatar(): Promise<void> {
+    try {
+      await apiService.delete("/auth/avatar");
+    } catch (error) {
+      console.error("[authService] Remove avatar error:", error);
+      throw new Error("Failed to remove avatar");
+    }
+  }
+
   // Email verification
   async sendEmailVerification(): Promise<void> {
     await apiService.post("/auth/send-verification");

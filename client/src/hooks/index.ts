@@ -1,5 +1,7 @@
 export { useAuth, useAuthUser, useAuthStatus, usePermissions } from "./useAuth";
 
+export { useProfile } from "./useProfile";
+
 export {
   useWebSocket,
   useWebSocketStatus,

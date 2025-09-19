@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "../ui";
-import type { Product } from "./ProductItem";
+import type { Product } from "../../types";
 import { formatCurrency, formatDate } from "../../utils";
 
 interface ProductInfoProps {

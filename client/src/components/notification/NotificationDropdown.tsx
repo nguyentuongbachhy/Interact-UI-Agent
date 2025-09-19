@@ -66,7 +66,7 @@ export function NotificationDropdown({
         {hasUnread && (
           <div className="flex items-center justify-between mt-2">
             <span className="text-sm text-gray-600">
-              {unreadNotifications.length} thông báo chưa đọc
+              {unreadNotifications.length} unread notifications
             </span>
             <Button
               variant="ghost"
@@ -75,7 +75,7 @@ export function NotificationDropdown({
               className="text-xs h-6 px-2"
             >
               <Check className="w-3 h-3 mr-1" />
-              Đánh dấu tất cả đã đọc
+              Mark all as read
             </Button>
           </div>
         )}
@@ -85,12 +85,14 @@ export function NotificationDropdown({
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
-            <p className="text-sm text-gray-500 mt-2">Đang tải...</p>
+            <p className="text-sm text-gray-500 mt-2">Loading...</p>
           </div>
         ) : notifications.length === 0 ? (
           <div className="p-8 text-center">
             <Bell className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <p className="text-sm text-gray-500">Chưa có thông báo nào</p>
+            <p className="text-sm text-gray-500">
+              No notification has been made yet
+            </p>
           </div>
         ) : (
           <div>
@@ -113,14 +115,13 @@ export function NotificationDropdown({
             size="sm"
             className="w-full text-sm h-8"
             onClick={() => {
-              // Navigate to notifications page
               onAction({
                 id: "view-all",
                 actionUrl: "/notifications",
               } as Notification);
             }}
           >
-            Xem tất cả thông báo
+            View all
           </Button>
         </div>
       )}

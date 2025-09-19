@@ -18,6 +18,7 @@ interface HeaderProps {
   onMenuToggle?: () => void;
   showMobileMenu?: boolean;
   title?: string;
+  onNavigate?: (path: string) => void;
 }
 
 export function Header({
@@ -26,6 +27,7 @@ export function Header({
   onMenuToggle,
   showMobileMenu = false,
   title = "Product Manager",
+  onNavigate,
 }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -36,6 +38,16 @@ export function Header({
   const handleLogout = () => {
     setShowUserMenu(false);
     onLogout?.();
+  };
+
+  const handleNavigateToProfile = () => {
+    setShowUserMenu(false);
+    onNavigate?.("/profile");
+  };
+
+  const handleNavigateToSettings = () => {
+    setShowUserMenu(false);
+    onNavigate?.("/settings");
   };
 
   return (
@@ -116,15 +128,23 @@ export function Header({
                         <p className="text-sm font-medium text-gray-900">
                           {user.name}
                         </p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
+                        <p className="text-xs text-gray-500 overflow-hidden overflow-ellipsis whitespace-nowrap ">
+                          {user.email}
+                        </p>
                       </div>
 
-                      <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <button
+                        onClick={handleNavigateToProfile}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
                         <Avatar className="mr-3 h-4 w-4" />
                         Profile
                       </button>
 
-                      <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <button
+                        onClick={handleNavigateToSettings}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
                         <Settings className="mr-3 h-4 w-4" />
                         Settings
                       </button>

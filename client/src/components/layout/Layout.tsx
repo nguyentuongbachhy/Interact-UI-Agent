@@ -106,6 +106,7 @@ export function Layout({
         onMenuToggle={handleMenuToggle}
         showMobileMenu={showMobileMenu}
         title={title}
+        onNavigate={onNavigate}
       />
 
       <div className="flex">
