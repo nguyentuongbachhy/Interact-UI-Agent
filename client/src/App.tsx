@@ -7,6 +7,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { TriangleAlert } from "lucide-react";
 
 // Hooks
 import { useAuth, useAppInitialization, useMCPListener } from "./hooks";
@@ -16,7 +17,7 @@ import { useMCPManager } from "./utils/mcpManager";
 // Components
 import { Layout } from "./components/layout";
 import { AuthPage } from "./components/auth";
-import { Button } from "./components/ui";
+import { Button, ToastContainer } from "./components/ui";
 
 // Utils
 import { ROUTES, FEATURE_FLAGS } from "./utils/constants";
@@ -33,6 +34,9 @@ const ProductDetailPage = React.lazy(() =>
 );
 const ProductFormPage = React.lazy(() =>
   import("./pages").then((m) => ({ default: m.ProductFormPage }))
+);
+const NotificationsPage = React.lazy(() =>
+  import("./pages").then((m) => ({ default: m.NotificationsPage }))
 );
 const SearchPage = React.lazy(() =>
   import("./pages").then((m) => ({ default: m.SearchPage }))
@@ -73,7 +77,9 @@ class ErrorBoundary extends React.Component<
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-6xl mb-4">⚠️</div>
+            <div className="text-6xl mb-4">
+              <TriangleAlert className="w-12 h-12" />
+            </div>
             <h1 className="text-xl font-semibold text-gray-900 mb-2">
               Oops! Something went wrong
             </h1>
@@ -96,7 +102,7 @@ class ErrorBoundary extends React.Component<
 const LoadingSpinner: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="flex flex-col items-center space-y-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       <p className="text-gray-600">Loading...</p>
     </div>
   </div>
@@ -141,7 +147,7 @@ const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ Dùng React Router navigate
+  const navigate = useNavigate();
   const { setCurrentPath } = useAppStore();
 
   // Update current path in store
@@ -150,7 +156,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [location.pathname, setCurrentPath]);
 
   const handleNavigate = (path: string) => {
-    navigate(path); // ✅ Dùng React Router navigate thay vì window.location.href
+    navigate(path);
   };
 
   return (
@@ -165,70 +171,25 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-// Toast Notification System
+// Enhanced Toast Notification System
 const ToastSystem: React.FC = () => {
   const { toasts, removeToast } = useAppStore();
 
+  // Convert appStore toasts to ToastContainer format
+  const toastData = toasts.map((toast) => ({
+    id: toast.id,
+    message: toast.message,
+    type: toast.type,
+    duration: toast.duration,
+  }));
+
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden ${
-            toast.type === "error"
-              ? "border-l-4 border-red-500"
-              : toast.type === "success"
-              ? "border-l-4 border-green-500"
-              : toast.type === "warning"
-              ? "border-l-4 border-yellow-500"
-              : "border-l-4 border-blue-500"
-          }`}
-        >
-          <div className="p-4">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                {toast.type === "error" && (
-                  <div className="text-red-500">❌</div>
-                )}
-                {toast.type === "success" && (
-                  <div className="text-green-500">✅</div>
-                )}
-                {toast.type === "warning" && (
-                  <div className="text-yellow-500">⚠️</div>
-                )}
-                {toast.type === "info" && (
-                  <div className="text-blue-500">ℹ️</div>
-                )}
-              </div>
-              <div className="ml-3 w-0 flex-1 pt-0.5">
-                <p className="text-sm font-medium text-gray-900">
-                  {toast.message}
-                </p>
-              </div>
-              <div className="ml-4 flex-shrink-0 flex">
-                <button
-                  className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500"
-                  onClick={() => removeToast(toast.id)}
-                >
-                  <span className="sr-only">Close</span>
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <ToastContainer
+      toasts={toastData}
+      onRemove={removeToast}
+      position="top-right"
+      maxToasts={5}
+    />
   );
 };
 
@@ -250,7 +211,7 @@ const ModalSystem: React.FC = () => {
           aria-hidden="true"
           onClick={closeModal}
         >
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          <div className="absolute inset-0 bg-gray-500 opacity-75" />
         </div>
 
         <span
@@ -304,7 +265,12 @@ const MCPStatus: React.FC = () => {
   if (import.meta.env.NODE_ENV === "development" && FEATURE_FLAGS.ENABLE_MCP) {
     return (
       <div className="fixed bottom-4 left-4 bg-black bg-opacity-80 text-white p-2 rounded text-xs">
-        MCP: {isConnected ? "✅" : isConnecting ? "🔄" : "❌"}
+        MCP:{" "}
+        {isConnected
+          ? "CONNECTED"
+          : isConnecting
+          ? "CONNECTING"
+          : "DISCONNECTED"}
         {error && <div className="text-red-300">Error: {error}</div>}
       </div>
     );
@@ -327,7 +293,9 @@ const AppInitializer: React.FC<{ children: React.ReactNode }> = ({
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="text-6xl mb-4">⚠️</div>
+          <div className="text-6xl mb-4">
+            <TriangleAlert className="w-12 h-12" />
+          </div>
           <h1 className="text-xl font-semibold text-gray-900 mb-2">
             Initialization Failed
           </h1>
@@ -470,6 +438,13 @@ const AppContent: React.FC<{
                         element={<ProductFormPage />}
                       />
                       <Route path={ROUTES.SEARCH} element={<SearchPage />} />
+
+                      {FEATURE_FLAGS.ENABLE_NOTIFICATIONS && (
+                        <Route
+                          path={ROUTES.NOTIFICATIONS}
+                          element={<NotificationsPage />}
+                        />
+                      )}
 
                       {FEATURE_FLAGS.ENABLE_CATEGORIES && (
                         <Route

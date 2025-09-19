@@ -61,15 +61,13 @@ const ProductsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sản phẩm</h1>
-          <p className="text-gray-600 mt-1">
-            Quản lý danh sách sản phẩm của bạn
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Product</h1>
+          <p className="text-gray-600 mt-1">Manage your product list</p>
         </div>
         <Link to={ROUTES.PRODUCT_NEW}>
           <Button>
             <Plus className="w-4 h-4 mr-2" />
-            Thêm sản phẩm
+            Add product
           </Button>
         </Link>
       </div>
@@ -117,7 +115,7 @@ const ProductsPage: React.FC = () => {
           selectedProducts.length === 1 ? selectedProducts[0] : undefined
         }
         showActions={true}
-        title="Danh sách sản phẩm"
+        title="Product list"
       />
 
       {/* Pagination */}
@@ -129,20 +127,20 @@ const ProductsPage: React.FC = () => {
               disabled={page <= 1}
               className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Trang trước
+              Previous
             </button>
             <button
               onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
               disabled={page >= totalPages}
               className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Trang sau
+              Next
             </button>
           </div>
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Hiển thị{" "}
+                Show{" "}
                 <span className="font-medium">
                   {Math.min((page - 1) * limit + 1, total)}
                 </span>{" "}
@@ -150,7 +148,7 @@ const ProductsPage: React.FC = () => {
                 <span className="font-medium">
                   {Math.min(page * limit, total)}
                 </span>{" "}
-                trên <span className="font-medium">{total}</span> kết quả
+                per <span className="font-medium">{total}</span> results
               </p>
             </div>
             <div>
@@ -163,7 +161,7 @@ const ProductsPage: React.FC = () => {
                   disabled={page <= 1}
                   className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="sr-only">Trang trước</span>
+                  <span className="sr-only">Previous</span>
                   <svg
                     className="h-5 w-5"
                     viewBox="0 0 20 20"
@@ -207,7 +205,7 @@ const ProductsPage: React.FC = () => {
                   disabled={page >= totalPages}
                   className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="sr-only">Trang sau</span>
+                  <span className="sr-only">Next</span>
                   <svg
                     className="h-5 w-5"
                     viewBox="0 0 20 20"
@@ -232,7 +230,7 @@ const ProductsPage: React.FC = () => {
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-lg border border-gray-200 p-4">
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-900">
-              {selectedProducts.length} sản phẩm được chọn
+              {selectedProducts.length} products selected
             </span>
             <div className="flex space-x-2">
               <Button
@@ -240,7 +238,7 @@ const ProductsPage: React.FC = () => {
                 size="sm"
                 onClick={() => setSelectedProducts([])}
               >
-                Hủy chọn
+                Deselect
               </Button>
               <Button
                 variant="danger"
@@ -256,7 +254,7 @@ const ProductsPage: React.FC = () => {
                   }
                 }}
               >
-                Xóa đã chọn
+                Delete selected
               </Button>
             </div>
           </div>

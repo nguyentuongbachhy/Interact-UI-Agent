@@ -39,10 +39,17 @@ export const formatCurrency = (amount: number, currency = "VND"): string => {
 };
 
 export const formatDate = (
-  date: Date | string,
+  date: Date | string | null | undefined,
   format: "short" | "long" | "time" = "short"
 ): string => {
+  if (date === null || date === undefined) {
+    return "";
+  }
   const dateObj = typeof date === "string" ? new Date(date) : date;
+
+  if (!dateObj || isNaN(dateObj.getTime())) {
+    return "";
+  }
 
   switch (format) {
     case "short":

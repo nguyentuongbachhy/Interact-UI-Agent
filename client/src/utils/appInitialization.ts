@@ -1,6 +1,6 @@
 import { FEATURE_FLAGS } from "./constants";
 
-// Global singleton để handle StrictMode double mounting
+// Global singleton to handle StrictMode double mounting
 class AppInitializationManager {
   private static instance: AppInitializationManager;
   private state = {

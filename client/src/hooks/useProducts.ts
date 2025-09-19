@@ -9,7 +9,7 @@ import type {
   SearchFilters,
   SearchProductsRequest,
 } from "../types";
-import { SUCCESS_MESSAGES } from "../utils/constants";
+import { getSuccessMessage } from "../utils/constants";
 
 interface UseProductsReturn {
   // State
@@ -59,10 +59,10 @@ export function useProducts(): UseProductsReturn {
     async (productData: CreateProductRequest) => {
       try {
         await productStore.createProduct(productData);
-        showToast(SUCCESS_MESSAGES.PRODUCT_CREATED, "success");
+        showToast(getSuccessMessage("PRODUCT_CREATED"), "success");
       } catch (error) {
         showToast(
-          error instanceof Error ? error.message : "Không thể tạo sản phẩm",
+          error instanceof Error ? error.message : "Cannot create product",
           "error"
         );
         throw error;
@@ -76,12 +76,10 @@ export function useProducts(): UseProductsReturn {
     async (id: string, productData: UpdateProductRequest) => {
       try {
         await productStore.updateProduct(id, productData);
-        showToast(SUCCESS_MESSAGES.PRODUCT_UPDATED, "success");
+        showToast(getSuccessMessage("PRODUCT_UPDATED"), "success");
       } catch (error) {
         showToast(
-          error instanceof Error
-            ? error.message
-            : "Không thể cập nhật sản phẩm",
+          error instanceof Error ? error.message : "Cannot update product",
           "error"
         );
         throw error;
@@ -95,10 +93,10 @@ export function useProducts(): UseProductsReturn {
     async (id: string) => {
       try {
         await productStore.deleteProduct(id);
-        showToast(SUCCESS_MESSAGES.PRODUCT_DELETED, "success");
+        showToast(getSuccessMessage("PRODUCT_DELETED"), "success");
       } catch (error) {
         showToast(
-          error instanceof Error ? error.message : "Không thể xóa sản phẩm",
+          error instanceof Error ? error.message : "Cannot delete product",
           "error"
         );
         throw error;
@@ -154,6 +152,51 @@ export function useProducts(): UseProductsReturn {
 
     // Bulk operations
     updateMultipleProducts,
+  };
+}
+
+// Hook for product detail page
+export function useProductDetail(productId: string) {
+  const { selectedProduct, getProduct, isLoading, error, clearError } =
+    useProducts();
+  const { showToast } = useAppStore();
+
+  // Load product detail
+  useEffect(() => {
+    if (productId && (!selectedProduct || selectedProduct.id !== productId)) {
+      getProduct(productId).catch((error) => {
+        showToast(
+          error instanceof Error ? error.message : "Cannot load product",
+          "error"
+        );
+      });
+    }
+  }, [productId, selectedProduct, getProduct, showToast]);
+
+  // Clear error on unmount
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
+
+  const refetch = useCallback(() => {
+    if (productId) {
+      getProduct(productId).catch((error) => {
+        showToast(
+          error instanceof Error ? error.message : "Cannot reload product",
+          "error"
+        );
+      });
+    }
+  }, [productId, getProduct, showToast]);
+
+  return {
+    product: selectedProduct,
+    isLoading,
+    error,
+    refetch,
+    productId,
   };
 }
 

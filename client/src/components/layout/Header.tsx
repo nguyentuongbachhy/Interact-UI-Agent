@@ -6,10 +6,10 @@ import {
   LogOut,
   Menu,
   X,
-  Bell,
   Search,
 } from "lucide-react";
 import { Button } from "../ui";
+import { NotificationBell } from "../notification";
 import type { User } from "../../types";
 
 interface HeaderProps {
@@ -76,12 +76,7 @@ export function Header({
           </Button>
 
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
-              3
-            </span>
-          </Button>
+          <NotificationBell />
 
           {/* User menu */}
           {user && (

@@ -37,6 +37,26 @@ export const UI_CONFIG = {
   TABLET_BREAKPOINT: 1024,
 } as const;
 
+// Notification Configuration
+export const NOTIFICATION_CONFIG = {
+  MAX_NOTIFICATIONS: 50,
+  AUTO_CLEANUP_DAYS: 30,
+  POLLING_INTERVAL: 30000, // 30 seconds
+  TYPES: {
+    INFO: "info",
+    SUCCESS: "success",
+    WARNING: "warning",
+    ERROR: "error",
+    SYSTEM: "system",
+  },
+  POSITIONS: {
+    TOP_RIGHT: "top-right",
+    TOP_LEFT: "top-left",
+    BOTTOM_RIGHT: "bottom-right",
+    BOTTOM_LEFT: "bottom-left",
+  },
+} as const;
+
 // Product Constants
 export const PRODUCT_CONFIG = {
   MAX_NAME_LENGTH: 100,
@@ -72,6 +92,7 @@ export const ROUTES = {
   ANALYTICS: "/analytics",
   SETTINGS: "/settings",
   PROFILE: "/profile",
+  NOTIFICATIONS: "/notifications", // New
 } as const;
 
 // Local Storage Keys
@@ -81,6 +102,7 @@ export const STORAGE_KEYS = {
   THEME: "theme-preference",
   VIEW_MODE: "view-mode",
   FILTERS: "search-filters",
+  NOTIFICATIONS: "notifications-storage", // New
 } as const;
 
 // Error Messages
@@ -100,6 +122,8 @@ export const ERROR_MESSAGES = {
   REGISTER_ERROR: "Registration failed. The email may already be in use.",
   PASSWORD_MISMATCH: "Password confirmation does not match.",
   WEAK_PASSWORD: "Password too weak. Please choose a stronger one.",
+  NOTIFICATION_LOAD_ERROR: "Failed to load notifications.", // New
+  NOTIFICATION_MARK_READ_ERROR: "Failed to mark notification as read.", // New
 } as const;
 
 // Success Messages
@@ -116,6 +140,9 @@ export const SUCCESS_MESSAGES = {
   EMAIL_VERIFIED: "Email verified successfully!",
   MCP_CONNECTED: "Connected to MCP Bridge!",
   MCP_COMMAND_SUCCESS: "Command executed successfully!",
+  NOTIFICATION_MARKED_READ: "Notification marked as read!", // New
+  ALL_NOTIFICATIONS_MARKED_READ: "All notifications marked as read!", // New
+  NOTIFICATION_DELETED: "Notification deleted!", // New
 } as const;
 
 // Validation Rules
@@ -160,6 +187,7 @@ export const FEATURE_FLAGS = {
   ENABLE_BULK_OPERATIONS: import.meta.env.VITE_ENABLE_BULK_OPS !== "false",
   ENABLE_CATEGORIES: import.meta.env.VITE_ENABLE_CATEGORIES !== "false",
   ENABLE_IMAGE_UPLOAD: import.meta.env.VITE_ENABLE_IMAGE_UPLOAD !== "false",
+  ENABLE_NOTIFICATIONS: import.meta.env.VITE_ENABLE_NOTIFICATIONS !== "false", // New
   DEBUG_MODE: import.meta.env.NODE_ENV === "development",
 } as const;
 
@@ -170,9 +198,10 @@ export const DEFAULTS = {
     LIMIT: 12,
   },
   THEME: "light" as const,
-  LANGUAGE: "en" as const,
+  LANGUAGE: "vi" as const,
   VIEW_MODE: "grid" as const,
   SORT_ORDER: "desc" as const,
+  NOTIFICATION_POSITION: "top-right" as const, // New
 } as const;
 
 // Export utility functions for constants

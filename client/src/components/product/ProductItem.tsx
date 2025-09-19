@@ -1,6 +1,7 @@
 import { Trash2, Edit, Package } from "lucide-react";
 import { Button, Card, CardContent } from "../ui";
 import type React from "react";
+import { formatDate } from "../../utils";
 
 export interface Product {
   id: string;
@@ -66,7 +67,7 @@ export function ProductItem({
                 size="sm"
                 onClick={handleEdit}
                 className="h-7 w-7 p-0 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 border border-blue-200/50 hover:border-blue-300 transition-all duration-200"
-                title="Chỉnh sửa"
+                title="Edit"
               >
                 <Edit className="w-6 h-6" />
               </Button>
@@ -75,7 +76,7 @@ export function ProductItem({
                 size="sm"
                 onClick={handleDelete}
                 className="h-7 w-7 p-0 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 border border-red-200/50 hover:border-red-300 transition-all duration-200"
-                title="Xóa"
+                title="Delete"
               >
                 <Trash2 className="w-6 h-6" />
               </Button>
@@ -142,11 +143,9 @@ export function ProductItem({
 
               {/* Update Info */}
               <div className="text-xs text-gray-400">
-                <span>Cập nhật: </span>
+                <span>Updated at: </span>
                 <span className="font-medium">
-                  {new Date(product.createdAt ?? "").toLocaleDateString(
-                    "vi-VN"
-                  )}
+                  {formatDate(product.createdAt)}
                 </span>
               </div>
             </div>

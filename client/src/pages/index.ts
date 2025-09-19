@@ -2,10 +2,11 @@
 export { default as DashboardPage } from "./DashboardPage";
 export { default as ProductsPage } from "./ProductsPage";
 export { default as ProductFormPage } from "./ProductFormPage";
+export { default as ProductDetailPage } from "./ProductDetailPage";
+export { default as NotificationsPage } from "./NotificationsPage";
 
 // Placeholder pages
 export {
-  ProductDetailPage,
   SearchPage,
   CategoriesPage,
   AnalyticsPage,

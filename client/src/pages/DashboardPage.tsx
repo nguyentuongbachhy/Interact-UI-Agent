@@ -17,53 +17,53 @@ const DashboardPage: React.FC = () => {
 
   const quickStats = [
     {
-      title: "Tổng sản phẩm",
+      title: "Total product",
       value: formatNumber(stats.total),
       icon: Package,
       color: "blue",
-      description: "Tổng số sản phẩm trong kho",
+      description: "Total products in stock",
     },
     {
-      title: "Còn hàng",
+      title: "In stock",
       value: formatNumber(stats.inStock),
       icon: TrendingUp,
       color: "green",
-      description: "Sản phẩm có sẵn",
+      description: "The product is available",
     },
     {
-      title: "Hết hàng",
+      title: "Out of stock",
       value: formatNumber(stats.outOfStock),
       icon: Package,
       color: "red",
-      description: "Sản phẩm cần nhập thêm",
+      description: "The product needs to be restocked.",
     },
     {
-      title: "Tổng giá trị",
+      title: "Total price",
       value: formatCurrency(stats.totalValue),
       icon: TrendingUp,
       color: "purple",
-      description: "Tổng giá trị hàng tồn kho",
+      description: "Total inventory pricing",
     },
   ];
 
   const quickActions = [
     {
-      title: "Thêm sản phẩm",
-      description: "Thêm sản phẩm mới vào kho",
+      title: "Add product",
+      description: "Add new product to inventory",
       icon: Plus,
       to: ROUTES.PRODUCT_NEW,
       color: "bg-blue-500 hover:bg-blue-600",
     },
     {
-      title: "Tìm kiếm",
-      description: "Tìm kiếm sản phẩm",
+      title: "Search",
+      description: "Search product",
       icon: Search,
       to: ROUTES.SEARCH,
       color: "bg-green-500 hover:bg-green-600",
     },
     {
-      title: "Danh sách sản phẩm",
-      description: "Xem tất cả sản phẩm",
+      title: "List of products",
+      description: "View all",
       icon: Package,
       to: ROUTES.PRODUCTS,
       color: "bg-purple-500 hover:bg-purple-600",
@@ -76,15 +76,18 @@ const DashboardPage: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-1">
-          Tổng quan hệ thống quản lý sản phẩm
+          Overview of the product management system
         </p>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {quickStats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
+          <Card
+            key={stat.title}
+            className="hover:shadow-md transition-shadow px-1 py-3"
+          >
+            <CardContent className="">
               <div className="flex items-center">
                 <div
                   className={`flex-shrink-0 p-3 rounded-lg ${
@@ -119,7 +122,7 @@ const DashboardPage: React.FC = () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Thao tác nhanh</CardTitle>
+          <CardTitle>Quick actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -154,10 +157,10 @@ const DashboardPage: React.FC = () => {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Sản phẩm gần đây</CardTitle>
+            <CardTitle>Recent products</CardTitle>
             <Link to={ROUTES.PRODUCTS}>
               <Button variant="ghost" size="sm">
-                Xem tất cả
+                View all
               </Button>
             </Link>
           </div>
@@ -168,10 +171,10 @@ const DashboardPage: React.FC = () => {
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="flex items-center space-x-4">
-                    <div className="bg-gray-200 h-16 w-16 rounded"></div>
+                    <div className="bg-gray-200 h-16 w-16 rounded" />
                     <div className="flex-1 space-y-2">
-                      <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
-                      <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
+                      <div className="bg-gray-200 h-4 w-3/4 rounded" />
+                      <div className="bg-gray-200 h-4 w-1/2 rounded" />
                     </div>
                   </div>
                 </div>
@@ -181,16 +184,16 @@ const DashboardPage: React.FC = () => {
             <div className="text-center py-8">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                Chưa có sản phẩm
+                No products available
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Bắt đầu bằng cách thêm sản phẩm đầu tiên.
+                Start by adding the first product.
               </p>
               <div className="mt-6">
                 <Link to={ROUTES.PRODUCT_NEW}>
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
-                    Thêm sản phẩm
+                    Add product
                   </Button>
                 </Link>
               </div>
@@ -233,7 +236,7 @@ const DashboardPage: React.FC = () => {
                       to={`/products/${product.id}`}
                       className="text-blue-600 hover:text-blue-500 text-sm font-medium"
                     >
-                      Xem chi tiết
+                      View details
                     </Link>
                   </div>
                 </div>
@@ -263,16 +266,17 @@ const DashboardPage: React.FC = () => {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-yellow-800">
-                  Cảnh báo tồn kho thấp
+                  Low stock warning
                 </h3>
                 <div className="mt-2 text-sm text-yellow-700">
                   <p>
-                    Bạn có {stats.lowStock} sản phẩm với số lượng thấp (dưới 5).
+                    You have {stats.lowStock} products with low quantity (below
+                    5).
                     <Link
                       to={ROUTES.PRODUCTS}
                       className="font-medium underline"
                     >
-                      Xem danh sách
+                      View list
                     </Link>
                   </p>
                 </div>

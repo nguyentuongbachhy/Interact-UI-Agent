@@ -10,6 +10,9 @@ export * from "./mcp";
 // API types
 export * from "./api";
 
+// Notification types
+export * from "./notification";
+
 // Common types
 export interface LoadingState {
   isLoading: boolean;
