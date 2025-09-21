@@ -12,6 +12,7 @@ import type {
   ShowNotificationCommand,
   NavigateToCommand,
 } from "../types";
+import { productService } from "./productService";
 
 export interface MCPHandlerOptions {
   onNavigate?: (path: string, replace?: boolean) => void;
@@ -92,9 +93,6 @@ export class MCPHandler {
     payload: AddProductCommand["payload"]
   ): Promise<any> {
     try {
-      // Import productService dynamically to avoid circular dependencies
-      const { productService } = await import("./productService");
-
       const product = await productService.createProduct(payload);
 
       // Show success notification
@@ -119,8 +117,6 @@ export class MCPHandler {
     payload: RemoveProductCommand["payload"]
   ): Promise<any> {
     try {
-      const { productService } = await import("./productService");
-
       await productService.deleteProduct(payload.productId);
 
       this.options.onShowNotification?.(
@@ -143,8 +139,6 @@ export class MCPHandler {
     payload: SearchProductCommand["payload"]
   ): Promise<any> {
     try {
-      const { productService } = await import("./productService");
-
       const result = await productService.searchProducts(
         payload.query || "",
         payload.filters

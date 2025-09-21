@@ -57,7 +57,7 @@ export function NotificationDropdown({
     >
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Thông báo</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Notification</h3>
           <Button variant="ghost" size="sm" onClick={onClose} className="p-1">
             <X className="w-4 h-4" />
           </Button>

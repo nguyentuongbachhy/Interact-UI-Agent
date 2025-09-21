@@ -146,14 +146,14 @@ export function SearchResults({
     return 0;
   });
 
-  const handleSort = (option: SortOption) => {
-    if (sortBy === option) {
-      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
-    } else {
-      setSortBy(option);
-      setSortDirection("asc");
-    }
-  };
+  // const handleSort = (option: SortOption) => {
+  //   if (sortBy === option) {
+  //     setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  //   } else {
+  //     setSortBy(option);
+  //     setSortDirection("asc");
+  //   }
+  // };
 
   const renderPagination = () => {
     if (results.totalPages <= 1) return null;

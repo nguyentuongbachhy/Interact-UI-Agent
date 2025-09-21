@@ -1,7 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, AuthState, LoginRequest, RegisterRequest } from "../types";
-import { getErrorMessage, STORAGE_KEYS } from "../utils/constants";
+import {
+  getErrorMessage,
+  STORAGE_KEYS,
+  FEATURE_FLAGS,
+} from "../utils/constants";
 import { authService } from "../services";
 
 interface AuthActions {
@@ -50,7 +54,6 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
 
-          const { FEATURE_FLAGS } = await import("../utils/constants");
           if (FEATURE_FLAGS.ENABLE_MCP) {
             try {
               const { connectMCPIfAuthenticated } = await import("./index");
@@ -75,7 +78,6 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const { authService } = await import("../services");
           const data = await authService.register(userData);
 
           console.log(
@@ -92,7 +94,6 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
 
-          const { FEATURE_FLAGS } = await import("../utils/constants");
           if (FEATURE_FLAGS.ENABLE_MCP) {
             try {
               const { connectMCPIfAuthenticated } = await import("./index");
@@ -136,7 +137,6 @@ export const useAuthStore = create<AuthStore>()(
 
       refreshAuthToken: async () => {
         try {
-          const { authService } = await import("../services");
           const tokens = await authService.refreshToken();
 
           set({

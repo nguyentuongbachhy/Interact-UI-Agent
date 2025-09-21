@@ -10,5 +10,5 @@ def get_db():
 def create_tables():
     from .base import Base, engine
     # Import all models to ensure relationships are resolved
-    import models  # This imports all models
+    import models  # This imports all models including notifications
     Base.metadata.create_all(bind=engine)

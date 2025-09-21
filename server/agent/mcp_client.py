@@ -1,6 +1,6 @@
 from typing import List, Optional
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_core.tools import Tool
+from langchain_core.tools import BaseTool
 from core import settings
 
 class MCPClient:
@@ -9,7 +9,7 @@ class MCPClient:
         self.connected = False
         self.user_id = None
     
-    async def connect(self, user_id: str) -> None:
+    def connect(self, user_id: str) -> None:
         if self.connected and self.user_id == user_id:
             return
             
@@ -26,15 +26,14 @@ class MCPClient:
                     }
                 }
             })
-            
-            await self.client.get_tools()
+
             self.connected = True
             
         except Exception as e:
             self.connected = False
             raise Exception(f"Failed to connect to MCP bridge: {str(e)}")
     
-    async def get_tools(self) -> List[Tool]:
+    async def get_tools(self) -> List[BaseTool]:
         if not self.connected or not self.client:
             return []
         
@@ -58,3 +57,13 @@ class MCPClient:
                 self.client = None
 
 mcp_client_instance = MCPClient()
+
+async def main():
+    mcp_client_instance.connect("1")
+    tools = await mcp_client_instance.get_tools()
+    print(tools)
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+    

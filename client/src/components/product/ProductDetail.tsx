@@ -1,6 +1,6 @@
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
-import type { Product } from "./ProductItem";
+import type { Product } from "../../types";
 
 interface ProductDetailProps {
   product: Product;

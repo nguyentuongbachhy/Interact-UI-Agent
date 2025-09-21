@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Plus, Grid, List } from "lucide-react";
-import { ProductItem, type Product } from "./ProductItem";
+import { ProductItem } from "./ProductItem";
 import { Button } from "../ui";
+
+import type { Product } from "../../types";
 
 interface ProductListProps {
   products: Product[];
