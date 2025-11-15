@@ -1,3 +1,4 @@
+mod agent;
 mod api;
 mod browser;
 mod models;
@@ -51,6 +52,7 @@ async fn main() -> Result<()> {
     tracing::info!("  GET  /:session_id/get_context - Get UI context (AXTree)");
     tracing::info!("  POST /:session_id/execute - Execute action");
     tracing::info!("  POST /:session_id/trigger - Handle client trigger");
+    tracing::info!("  POST /:session_id/agent/execute - Execute task with AI agent (Step 2)");
     tracing::info!("  DELETE /sessions/:session_id - Delete session");
 
     // Start server

@@ -5,6 +5,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::agent::{AgentExecutor, AgentExecutionResult};
 use crate::browser::ContextExtractor;
 use crate::models::{ActionRequest, ActionResponse, TriggerEvent, UIContext};
 
@@ -236,4 +237,60 @@ pub async fn list_sessions(
     let count = sessions.len();
 
     Json(ListSessionsResponse { sessions, count })
+}
+
+/// Execute task with AI agent (Step 2: Agent Logic)
+#[derive(Debug, Deserialize)]
+pub struct AgentTaskRequest {
+    pub task: String,
+}
+
+pub async fn agent_execute_task(
+    State(state): State<AppState>,
+    Path(session_id): Path<String>,
+    Json(req): Json<AgentTaskRequest>,
+) -> Result<Json<AgentExecutionResult>, (StatusCode, String)> {
+    tracing::info!("Agent execution requested for session: {}", session_id);
+    tracing::info!("Task: {}", req.task);
+
+    // Update activity
+    state
+        .session_manager
+        .update_activity(&session_id)
+        .map_err(|e| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Session not found: {}", e),
+            )
+        })?;
+
+    // Get browser
+    let browser = state
+        .session_manager
+        .get_browser(&session_id)
+        .map_err(|e| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Session not found: {}", e),
+            )
+        })?;
+
+    // Create agent executor
+    let agent = AgentExecutor::new();
+
+    // Execute task
+    let result = agent
+        .execute_single_step(&browser, &req.task)
+        .await
+        .map_err(|e| {
+            tracing::error!("Agent execution error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Agent execution failed: {}", e),
+            )
+        })?;
+
+    tracing::info!("Agent execution completed: success={}", result.success);
+
+    Ok(Json(result))
 }

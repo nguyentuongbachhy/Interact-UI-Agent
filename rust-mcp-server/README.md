@@ -14,8 +14,8 @@ This is a **Rust-based MCP Server** designed to enable LLM agents to interact wi
 ### Tech Stack
 
 - **Backend**: Rust + `axum` (web framework)
-- **Browser Automation**: `playwright-rs`
-- **Agent Logic**: (To be integrated in Step 2)
+- **Browser Automation**: `chromiumoxide` (Chrome DevTools Protocol)
+- **Agent Logic**: OpenAI API (GPT-4) - **Step 2 Complete** ✅
 - **Frontend**: SolidJS + Solid-Router (Step 1.5)
 
 ### Key Solutions Implemented
@@ -58,13 +58,32 @@ POST   /:session_id/trigger         - Handle client-side triggers
 - `wait_for_element` - Wait for element to appear
 - `navigate` - Navigate to URL
 
-### 🔄 Step 1.5: Client-side Trigger (Next)
+### ✅ Step 1.5: Client-side Trigger (Complete)
 
-SolidJS component to notify server on route changes.
+SolidJS app with RouterTrigger component that notifies server on route changes.
 
-### ⏳ Step 2: Agent Logic (Planned)
+### ✅ Step 2: Agent Logic (Complete)
 
-Integrate LLM for decision-making.
+**Integrated LLM for autonomous decision-making:**
+- OpenAI API client wrapper (`async-openai`)
+- Prompt engineering with AXTree context
+- Single-step autonomous task execution
+- JSON-based action generation
+
+**API Endpoint**:
+```
+POST /:session_id/agent/execute
+Body: { "task": "Click the login button" }
+```
+
+**Flow**:
+1. Extract UI context (AXTree)
+2. Send context + task to LLM
+3. LLM decides next action (JSON)
+4. Execute action on browser
+5. Return result with updated context
+
+**Multi-user Support**: Sessions include `user_id` field for future multi-tenant scenarios.
 
 ### ⏳ Step 3: Feedback Loop (Planned)
 
@@ -79,11 +98,8 @@ Redis-based session storage for scalability.
 ### Prerequisites
 
 1. **Rust** (1.70+)
-2. **Node.js** (for Playwright browsers)
-3. **Playwright browsers**:
-   ```bash
-   npx playwright install
-   ```
+2. **Chrome/Chromium** installed (for chromiumoxide)
+3. **OpenAI API Key** (for agent functionality)
 
 ### Installation
 
@@ -93,6 +109,9 @@ cd rust-mcp-server
 
 # Copy environment file
 cp .env.example .env
+
+# Add your OpenAI API key to .env
+# OPENAI_API_KEY=sk-...
 
 # Build project
 cargo build --release

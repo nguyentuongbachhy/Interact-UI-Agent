@@ -32,8 +32,11 @@ uuid = { version = "1.10", features = ["v4", "serde"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
-# HTTP client (for future LLM calls)
+# HTTP client (for LLM calls)
 reqwest = { version = "0.12", features = ["json"] }
+
+# OpenAI API client for LLM integration (Step 2)
+async-openai = "0.23"
 
 # Environment variables
 dotenv = "0.15"

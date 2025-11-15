@@ -26,6 +26,8 @@ pub fn create_router(state: AppState) -> Router {
         .route("/:session_id/get_context", get(get_context))
         .route("/:session_id/execute", post(execute_action))
         .route("/:session_id/trigger", post(handle_trigger))
+        // Agent APIs (Step 2)
+        .route("/:session_id/agent/execute", post(agent_execute_task))
         .layer(cors)
         .with_state(state)
 }

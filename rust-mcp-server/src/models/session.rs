@@ -5,6 +5,10 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Session {
     pub id: String,
+
+    /// User ID for multi-user support (Step 4)
+    pub user_id: Option<String>,
+
     pub created_at: DateTime<Utc>,
     pub last_activity: DateTime<Utc>,
 
@@ -31,6 +35,7 @@ impl Session {
 
         Self {
             id: Uuid::new_v4().to_string(),
+            user_id: None, // Can be set later for multi-user scenarios
             created_at: now,
             last_activity: now,
             browser_info: BrowserInfo {
@@ -40,6 +45,11 @@ impl Session {
                 viewport_height,
             },
         }
+    }
+
+    pub fn with_user_id(mut self, user_id: String) -> Self {
+        self.user_id = Some(user_id);
+        self
     }
 
     pub fn update_activity(&mut self) {
