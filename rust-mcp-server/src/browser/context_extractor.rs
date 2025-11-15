@@ -1,10 +1,10 @@
-use anyhow::Result;
-use playwright::api::Page;
+use anyhow::{Context as AnyhowContext, Result};
+use chromiumoxide::page::Page;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use crate::models::{
-    AXElement, ElementRect, SemanticSelector, SimplifiedElement, UIContext, Viewport,
+    AXElement, ElementRect, SimplifiedElement, UIContext, Viewport,
 };
 
 /// Extract UI context from page using Accessibility Tree (Solution A)
@@ -16,8 +16,13 @@ impl ContextExtractor {
         let page_guard = page.read().await;
 
         // Get basic page info
-        let url = page_guard.url()?;
-        let title = page_guard.title().await?;
+        let url = page_guard
+            .url()
+            .await?
+            .map(|u| u.to_string())
+            .unwrap_or_default();
+
+        let title = page_guard.get_title().await?.unwrap_or_default();
 
         // Get viewport info
         let viewport = Self::extract_viewport(&page_guard).await?;
@@ -38,32 +43,43 @@ impl ContextExtractor {
 
     /// Extract viewport information
     async fn extract_viewport(page: &Page) -> Result<Viewport> {
-        // Get viewport size
-        let viewport_size = page.viewport_size()?;
-
-        // Get scroll position using JavaScript
-        let scroll_script = r#"
+        // Get viewport size and scroll position using JavaScript
+        let script = r#"
             ({
-                x: window.scrollX || window.pageXOffset,
-                y: window.scrollY || window.pageYOffset
+                width: window.innerWidth,
+                height: window.innerHeight,
+                scrollX: window.scrollX || window.pageXOffset,
+                scrollY: window.scrollY || window.pageYOffset
             })
         "#;
 
-        let scroll_data = page.evaluate(scroll_script).await?;
-        let scroll_obj = scroll_data.as_object().context("Invalid scroll data")?;
+        let viewport_data = page.evaluate(script).await?;
+        let value = viewport_data.value().context("No value returned")?;
+        let viewport_obj = value.as_object().context("Invalid viewport data")?;
 
-        let scroll_x = scroll_obj
-            .get("x")
+        let width = viewport_obj
+            .get("width")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(1280.0) as u32;
+
+        let height = viewport_obj
+            .get("height")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(720.0) as u32;
+
+        let scroll_x = viewport_obj
+            .get("scrollX")
             .and_then(|v| v.as_f64())
             .unwrap_or(0.0);
-        let scroll_y = scroll_obj
-            .get("y")
+
+        let scroll_y = viewport_obj
+            .get("scrollY")
             .and_then(|v| v.as_f64())
             .unwrap_or(0.0);
 
         Ok(Viewport {
-            width: viewport_size.width,
-            height: viewport_size.height,
+            width,
+            height,
             scroll_x,
             scroll_y,
         })
@@ -71,10 +87,7 @@ impl ContextExtractor {
 
     /// Extract accessibility tree from page
     async fn extract_ax_tree(page: &Page) -> Result<Vec<AXElement>> {
-        // Use Playwright's snapshot capability to get AX tree
-        // Note: playwright-rs might have limited AX tree support
-        // We'll use a JavaScript-based approach to extract semantic elements
-
+        // Use JavaScript-based approach to extract semantic elements
         let script = r#"
             (() => {
                 const elements = [];
@@ -207,7 +220,8 @@ impl ContextExtractor {
         let result = page.evaluate(script).await?;
 
         // Parse the result
-        let elements: Vec<AXElement> = serde_json::from_value(result)?;
+        let value = result.into_value()?;
+        let elements: Vec<AXElement> = serde_json::from_value(value)?;
 
         Ok(elements)
     }
