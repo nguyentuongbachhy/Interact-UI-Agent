@@ -26,6 +26,10 @@ class MCPService {
     const data = await response.json();
     this.sessionId = data.session_id;
 
+    if (!this.sessionId) {
+      throw new Error('Server did not return a session ID');
+    }
+
     console.log('[MCP] Session created:', this.sessionId);
     return this.sessionId;
   }
