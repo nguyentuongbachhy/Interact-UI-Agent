@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # Redis (Optional - for Step 4 session storage)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: mcp-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ============================================
+  # MCP Server (Rust Backend)
+  # ============================================
+  mcp-server:
+    build:
+      context: ./rust-mcp-server
+      dockerfile: Dockerfile
+    container_name: mcp-server
+    ports:
+      - "8080:8080"
+    environment:
+      # Server config
+      - PORT=8080
+      - RUST_LOG=mcp_server=info,tower_http=info
+
+      # OpenAI (Step 2 & 3)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4}
+
+      # Redis (Step 4) - Optional
+      - USE_REDIS=${USE_REDIS:-false}
+      - REDIS_URL=redis://redis:6379
+
+      # Authentication (Step 4)
+      - JWT_SECRET=${JWT_SECRET:-dev_secret_change_in_production}
+
+      # Rate limiting (Step 4)
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+
+      # Session management (Step 4)
+      - SESSION_EXPIRATION_SECONDS=${SESSION_EXPIRATION_SECONDS:-3600}
+
+      # Chromium flags
+      - CHROME_BIN=/usr/bin/chromium
+      - CHROMIUM_FLAGS=--no-sandbox --disable-dev-shm-usage --disable-gpu
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - mcp-network
+    # Increase shared memory for Chromium
+    shm_size: 2gb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # ============================================
+  # SolidJS Demo App (Frontend)
+  # ============================================
+  solidjs-app:
+    build:
+      context: ./solidjs-demo-app
+      dockerfile: Dockerfile
+    container_name: solidjs-app
+    ports:
+      - "3000:80"
+    networks:
+      - mcp-network
+    depends_on:
+      - mcp-server
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  mcp-network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  redis-data:
+    driver: local
