@@ -47,6 +47,8 @@ impl Session {
         }
     }
 
+    /// Builder method to set user_id (for future multi-user session creation)
+    #[allow(dead_code)]
     pub fn with_user_id(mut self, user_id: String) -> Self {
         self.user_id = Some(user_id);
         self

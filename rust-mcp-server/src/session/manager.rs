@@ -64,6 +64,7 @@ impl SessionManager {
     }
 
     /// Get session metadata
+    #[allow(dead_code)] // Utility method for future session inspection
     pub fn get_session(&self, session_id: &str) -> Result<Session> {
         let entry = self
             .sessions
@@ -103,6 +104,7 @@ impl SessionManager {
     }
 
     /// Get session count
+    #[allow(dead_code)] // Utility method for monitoring/stats
     pub fn session_count(&self) -> usize {
         self.sessions.len()
     }

@@ -2,17 +2,18 @@ use anyhow::Result;
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
 use serde_json;
-use std::sync::Arc;
-use std::time::Duration;
 
 use crate::models::Session;
 
 /// Redis-backed session store for production multi-user scenarios
+/// Will be used when USE_REDIS=true in production
+#[allow(dead_code)]
 pub struct RedisSessionStore {
     client: ConnectionManager,
     expiration_seconds: u64,
 }
 
+#[allow(dead_code)] // All methods will be used when USE_REDIS=true in production
 impl RedisSessionStore {
     /// Create new Redis session store
     pub async fn new(redis_url: &str, expiration_seconds: u64) -> Result<Self> {
@@ -31,17 +32,17 @@ impl RedisSessionStore {
         let value = serde_json::to_string(session)?;
 
         self.client
-            .set_ex(&key, value, self.expiration_seconds)
+            .set_ex::<_, _, ()>(&key, value, self.expiration_seconds)
             .await?;
 
         // Also index by user_id if present
         if let Some(user_id) = &session.user_id {
             let user_sessions_key = Self::user_sessions_key(user_id);
             self.client
-                .sadd(&user_sessions_key, &session.id)
+                .sadd::<_, _, ()>(&user_sessions_key, &session.id)
                 .await?;
             self.client
-                .expire(&user_sessions_key, self.expiration_seconds as i64)
+                .expire::<_, ()>(&user_sessions_key, self.expiration_seconds as i64)
                 .await?;
         }
 
@@ -74,13 +75,13 @@ impl RedisSessionStore {
             if let Some(user_id) = &session.user_id {
                 let user_sessions_key = Self::user_sessions_key(user_id);
                 self.client
-                    .srem(&user_sessions_key, session_id)
+                    .srem::<_, _, ()>(&user_sessions_key, session_id)
                     .await?;
             }
         }
 
         let key = Self::session_key(session_id);
-        self.client.del(&key).await?;
+        self.client.del::<_, ()>(&key).await?;
 
         tracing::debug!("Session {} deleted from Redis", session_id);
         Ok(())
@@ -90,7 +91,7 @@ impl RedisSessionStore {
     pub async fn update_activity(&mut self, session_id: &str) -> Result<()> {
         let key = Self::session_key(session_id);
         self.client
-            .expire(&key, self.expiration_seconds as i64)
+            .expire::<_, ()>(&key, self.expiration_seconds as i64)
             .await?;
 
         tracing::debug!("Session {} activity updated", session_id);
@@ -138,7 +139,7 @@ impl RedisSessionStore {
                 // Check if session still exists
                 if self.get(&session_id).await?.is_none() {
                     // Remove from user index
-                    self.client.srem(&user_key, &session_id).await?;
+                    self.client.srem::<_, _, ()>(&user_key, &session_id).await?;
                     cleaned += 1;
                 }
             }

@@ -7,7 +7,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 
 use crate::agent::{AgentExecutor, AgentExecutionResult, MultiStepExecutionResult};
-use crate::auth::{AuthUser, Claims, JwtHandler};
+use crate::auth::{AuthUser, Claims};
 use crate::browser::ContextExtractor;
 use crate::models::{ActionRequest, ActionResponse, TriggerEvent, UIContext};
 
@@ -372,6 +372,7 @@ pub async fn agent_execute_multi_step(
 pub struct LoginRequest {
     pub username: String,
     /// In production, this would be a hashed password
+    #[allow(dead_code)]
     pub password: String,
 }
 
