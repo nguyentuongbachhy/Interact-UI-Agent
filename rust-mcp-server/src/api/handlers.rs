@@ -1,11 +1,13 @@
 use axum::{
     extract::{Path, State},
     http::StatusCode,
+    Extension,
     Json,
 };
 use serde::{Deserialize, Serialize};
 
-use crate::agent::{AgentExecutor, AgentExecutionResult};
+use crate::agent::{AgentExecutor, AgentExecutionResult, MultiStepExecutionResult};
+use crate::auth::{AuthUser, Claims, JwtHandler};
 use crate::browser::ContextExtractor;
 use crate::models::{ActionRequest, ActionResponse, TriggerEvent, UIContext};
 
@@ -293,4 +295,172 @@ pub async fn agent_execute_task(
     tracing::info!("Agent execution completed: success={}", result.success);
 
     Ok(Json(result))
+}
+
+/// Execute multi-step task with feedback loop (Step 3: Feedback Loop)
+#[derive(Debug, Deserialize)]
+pub struct MultiStepTaskRequest {
+    pub task: String,
+    /// Maximum number of steps (default: 20)
+    #[serde(default)]
+    pub max_steps: Option<usize>,
+    /// Maximum retries per step (default: 3)
+    #[serde(default)]
+    pub max_retries_per_step: Option<usize>,
+}
+
+pub async fn agent_execute_multi_step(
+    State(state): State<AppState>,
+    Path(session_id): Path<String>,
+    Json(req): Json<MultiStepTaskRequest>,
+) -> Result<Json<MultiStepExecutionResult>, (StatusCode, String)> {
+    tracing::info!("Multi-step agent execution requested for session: {}", session_id);
+    tracing::info!("Task: {}", req.task);
+    tracing::info!("Max steps: {:?}, Max retries per step: {:?}", req.max_steps, req.max_retries_per_step);
+
+    // Update activity
+    state
+        .session_manager
+        .update_activity(&session_id)
+        .map_err(|e| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Session not found: {}", e),
+            )
+        })?;
+
+    // Get browser
+    let browser = state
+        .session_manager
+        .get_browser(&session_id)
+        .map_err(|e| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Session not found: {}", e),
+            )
+        })?;
+
+    // Create agent executor
+    let agent = AgentExecutor::new();
+
+    // Execute multi-step task
+    let result = agent
+        .execute_multi_step(&browser, &req.task, req.max_steps, req.max_retries_per_step)
+        .await
+        .map_err(|e| {
+            tracing::error!("Multi-step agent execution error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Multi-step agent execution failed: {}", e),
+            )
+        })?;
+
+    tracing::info!(
+        "Multi-step agent execution completed: task_completed={}, steps_taken={}, retries={}",
+        result.task_completed,
+        result.steps_taken,
+        result.retries_count
+    );
+
+    Ok(Json(result))
+}
+
+// ===== Authentication Handlers (Step 4) =====
+
+/// Login request for JWT authentication
+#[derive(Debug, Deserialize)]
+pub struct LoginRequest {
+    pub username: String,
+    /// In production, this would be a hashed password
+    pub password: String,
+}
+
+/// Login response with JWT token
+#[derive(Debug, Serialize)]
+pub struct LoginResponse {
+    pub token: String,
+    pub user_id: String,
+    pub username: String,
+}
+
+/// Simple login endpoint (Step 4)
+/// In production, you would validate against a database with hashed passwords
+pub async fn login(
+    State(state): State<AppState>,
+    Json(req): Json<LoginRequest>,
+) -> Result<Json<LoginResponse>, (StatusCode, String)> {
+    tracing::info!("Login attempt for user: {}", req.username);
+
+    // TODO: In production, validate against database with hashed passwords
+    // For now, simple username-based authentication for demo
+    if req.username.is_empty() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Username cannot be empty".to_string(),
+        ));
+    }
+
+    // Generate user ID (in production, retrieve from database)
+    let user_id = format!("user_{}", uuid::Uuid::new_v4());
+
+    // Get JWT expiration from env or use default (24 hours)
+    let expiration_seconds = std::env::var("JWT_EXPIRATION_SECONDS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(86400); // 24 hours
+
+    // Create JWT claims
+    let claims = Claims::new(
+        user_id.clone(),
+        Some(req.username.clone()),
+        expiration_seconds,
+    );
+
+    // Encode token
+    let token = state
+        .jwt_handler
+        .encode(&claims)
+        .map_err(|e| {
+            tracing::error!("Failed to encode JWT: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Failed to create token".to_string(),
+            )
+        })?;
+
+    tracing::info!("User {} logged in successfully (user_id: {})", req.username, user_id);
+
+    Ok(Json(LoginResponse {
+        token,
+        user_id,
+        username: req.username,
+    }))
+}
+
+/// Get current user info from JWT
+/// Returns user info if authenticated, or None if not
+#[derive(Debug, Serialize)]
+pub struct CurrentUserResponse {
+    pub authenticated: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub username: Option<String>,
+}
+
+pub async fn get_current_user(
+    auth_user: Option<Extension<AuthUser>>,
+) -> Json<CurrentUserResponse> {
+    match auth_user {
+        Some(Extension(user)) => Json(CurrentUserResponse {
+            authenticated: true,
+            user_id: Some(user.user_id),
+            username: user.username,
+        }),
+        None => Json(CurrentUserResponse {
+            authenticated: false,
+            user_id: None,
+            username: None,
+        }),
+    }
 }

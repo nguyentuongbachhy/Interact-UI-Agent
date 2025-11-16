@@ -44,8 +44,13 @@ dotenv = "0.15"
 # Date/time
 chrono = { version = "0.4", features = ["serde"] }
 
-# For session storage (we'll use in-memory first, Redis later)
+# Session storage (Step 4)
 dashmap = "6.0"
+redis = { version = "0.26", features = ["tokio-comp", "connection-manager", "aio"] }
+
+# Authentication and rate limiting (Step 4)
+jsonwebtoken = "9.3"
+tower_governor = "0.4"
 
 [dev-dependencies]
 # Testing
