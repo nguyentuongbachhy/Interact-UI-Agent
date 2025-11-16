@@ -31,6 +31,8 @@ impl LLMClient {
     }
 
     /// Generate a completion from the LLM
+    /// Currently using generate_json for structured output, but kept for future use
+    #[allow(dead_code)]
     pub async fn generate(
         &self,
         system_prompt: &str,

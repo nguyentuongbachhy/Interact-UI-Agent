@@ -2,11 +2,11 @@ use axum::{
     extract::{Request, State},
     http::{header, StatusCode},
     middleware::Next,
-    response::{IntoResponse, Response},
+    response::Response,
 };
 use std::sync::Arc;
 
-use super::jwt::{Claims, JwtHandler};
+use super::jwt::JwtHandler;
 
 /// Authenticated user information extracted from JWT
 #[derive(Debug, Clone)]
@@ -19,6 +19,7 @@ pub struct AuthUser {
 ///
 /// Extracts the JWT token from the Authorization header (Bearer token)
 /// and validates it. If valid, adds the user info to request extensions.
+#[allow(dead_code)] // Used when protected_routes is enabled in routes.rs
 pub async fn auth_middleware(
     State(jwt_handler): State<Arc<JwtHandler>>,
     mut request: Request,

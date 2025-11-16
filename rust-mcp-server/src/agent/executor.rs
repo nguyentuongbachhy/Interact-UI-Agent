@@ -344,7 +344,6 @@ impl AgentExecutor {
         max_retries: usize,
     ) -> Result<(ActionRequest, String, usize)> {
         let mut current_prompt = initial_user_prompt.to_string();
-        let mut last_error: Option<(String, String, String)> = None; // (action_str, error, suggestion)
 
         for retry in 0..=max_retries {
             if retry > 0 {
@@ -401,7 +400,6 @@ impl AgentExecutor {
                                 &suggestion,
                             );
 
-                            last_error = Some((action_str, error_msg.to_string(), suggestion));
                             continue;
                         } else {
                             return Err(anyhow::anyhow!(

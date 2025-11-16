@@ -11,6 +11,7 @@ use crate::models::{ActionRequest, ActionResponse, ScrollDirection, SemanticSele
 
 /// Browser automation handler using Chromiumoxide
 pub struct BrowserAutomation {
+    #[allow(dead_code)] // Kept for future direct browser control
     browser: Arc<Browser>,
     page: Arc<RwLock<Page>>,
 }
@@ -409,6 +410,7 @@ impl BrowserAutomation {
     }
 
     /// Get current page URL
+    #[allow(dead_code)] // Utility method for future use
     pub async fn get_url(&self) -> Result<String> {
         let page = self.page.read().await;
         let url = page.url().await?;
@@ -416,6 +418,7 @@ impl BrowserAutomation {
     }
 
     /// Get current page title
+    #[allow(dead_code)] // Utility method for future use
     pub async fn get_title(&self) -> Result<String> {
         let page = self.page.read().await;
         let title = page.get_title().await?;

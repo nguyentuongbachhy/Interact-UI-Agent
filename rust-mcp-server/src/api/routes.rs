@@ -6,6 +6,7 @@ use axum::{
 use tower_http::cors::{Any, CorsLayer};
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
 
+#[allow(unused_imports)] // Used when protected_routes is enabled
 use crate::auth::{auth_middleware, optional_auth_middleware};
 use super::handlers::*;
 use super::state::AppState;
